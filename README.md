@@ -10,16 +10,22 @@ The first step is to clone the repo:
 git clone https://github.com/stuniel/js-style.git
 ```
 
+or if you use npm:
+
+```
+npm install js-style
+```
+
 To use js-style you have to import the module
 
 ```
-const js_style = require("./js-style/index.js")
+const js_style = require("js-style")
 ```
 
 or if you are using ES6 syntax.
 
 ```
-import jsStyle from './js-style/index.js'
+import jsStyle from 'js-style'
 ```
 
 After you import the module you can assign it to a variable.
