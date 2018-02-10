@@ -1,0 +1,25 @@
+{
+  "name": "js-style",
+  "version": "1.0.0",
+  "description": "JavaScript methods based CSS preprocessor",
+  "main": "index.js",
+  "scripts": {
+    "test": "npm test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/stuniel/js-style.git"
+  },
+  "keywords": [
+    "js-style",
+    "javascript",
+    "css",
+    "preprocessor"
+  ],
+  "author": "Daniel Studziński",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/stuniel/js-style/issues"
+  },
+  "homepage": "https://github.com/stuniel/js-style#readme"
+}
