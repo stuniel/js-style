@@ -21,5 +21,6 @@
   "bugs": {
     "url": "https://github.com/stuniel/js-style/issues"
   },
-  "homepage": "https://github.com/stuniel/js-style#readme"
+  "homepage": "https://github.com/stuniel/js-style#readme",
+  "module": "index"
 }
