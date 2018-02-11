@@ -2,6 +2,7 @@
 
 **js-style is an easy JavaScript based CSS preprocessor**.
 
+
 ## Using
 
 The first step is to clone the repo:
@@ -22,18 +23,6 @@ To use js-style you have to import the module
 const js_style = require("js-style")
 ```
 
-or if you are using ES6 syntax.
-
-```
-import jsStyle from 'js-style'
-```
-
-After you import the module you can assign it to a variable.
-
-```
-const table = js_style()
-```
-
 Now you are ready to use all the methods that the library provides.
 
 After you write your code in a JavaScript file you can run
@@ -43,6 +32,7 @@ node file.js > file.css
 ```
 
 in your terminal to compile it to a CSS file.
+
 
 ## Methods
 
@@ -74,19 +64,17 @@ will result in
 color: #3e3e3e;
 ```
 
-After declaring all the properties you have to use `.close()` method to render the output.
+After declaring all the properties you have to use `.render()` method to render the output.
 
 A simple example will look like this
 
 ```js
 const table = js_style()
-
-table
   .selector('.table')
   .position('relative')
   .color('#3e3e3e')
   .backgroundColor('#ffffff')
-  .close()
+  .render()
 ```
 
 and will result in
@@ -99,6 +87,12 @@ table {
 }
 ```
 
+
+### Use
+
+If you want to use a variable add method `.use()` at the end.
+
+
 ### Extend
 
 js-styles provides `.extend()` method that lets you share a set of CSS properties from one selector to another.
@@ -106,23 +100,19 @@ js-styles provides `.extend()` method that lets you share a set of CSS propertie
 This code
 
 ```js
-const table = js_style()
-
-const basicTable = table
+const basicTable = js_style()
   .selector('.table')
   .position('relative')
   .color('#3e3e3e')
   .backgroundColor('#ffffff')
-  .close()
+  .use()
 
 const bigTable = js_style()
-
-bigTable
   .selector('.table--big')
   .extend(basicTable)
   .width('100%')
   .height('100%')
-  .close()
+  .render()
 ```
 
 will result in
@@ -144,6 +134,61 @@ will result in
 
 ```
 
+
+### Nest
+
+js-style provides `.nest()` method that let's you nest CSS selectors.
+
+This code
+
+```js
+const js_style = require('./src/index.js')
+
+const defaultPosition = 'relative';
+
+const basicCell = js_style()
+  .selector('.cell')
+  .position(defaultPosition)
+  .color('#444444')
+  .backgroundColor('#ffffff')
+  .use()
+
+const basicTable = js_style()
+  .selector('.table')
+  .nest(basicCell)
+  .position(defaultPosition)
+  .color('#3e3e3e')
+  .backgroundColor('#ffffff')
+  .use()
+
+const basicPage = js_style()
+  .selector('div')
+  .nest(basicTable)
+  .backgroundColor('red')
+  .render()
+```
+
+will result in
+
+```css
+div {
+  background-color: red
+}
+
+div .table {
+  position: relative
+  color: #3e3e3e
+  background-color: #ffffff
+}
+
+div .table .cell {
+  position: relative
+  color: #444444
+  background-color: #ffffff
+}
+```
+
+
 ### Variables
 
 Use the same color all over the place?
@@ -153,13 +198,11 @@ js-style lets you use JavaScript variables to store values that you want to use 
 const primaryColor = '#e3e3e3'
 
 const table = js_style()
-
-table
   .selector('.table')
   .position('relative')
   .color(primaryColor)
   .backgroundColor('#ffffff')
-  .close()
+  .render()
 ```
 
 As simple as that.
