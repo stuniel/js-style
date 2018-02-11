@@ -1,6 +1,6 @@
 {
   "name": "js-style",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "JavaScript methods based CSS preprocessor",
   "main": "./dist/index.js",
   "scripts": {
