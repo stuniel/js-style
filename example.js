@@ -1,19 +1,24 @@
-const js_style = require("./index.js")
+const js_style = require('./src/index.js')
 
-const table = js_style()
+const defaultPosition = 'relative';
 
-const basicTable = table
+const basicCell = js_style()
+  .selector('.cell')
+  .position(defaultPosition)
+  .color('#444444')
+  .backgroundColor('#ffffff')
+  .use()
+
+const basicTable = js_style()
   .selector('.table')
-  .position('relative')
+  .nest(basicCell)
+  .position(defaultPosition)
   .color('#3e3e3e')
   .backgroundColor('#ffffff')
-  .close()
+  .use()
 
-const bigTable = js_style()
-
-bigTable
-  .selector('.table--big')
-  .extend(basicTable)
-  .width('100%')
-  .height('100%')
-  .close()
+const basicPage = js_style()
+  .selector('div')
+  .nest(basicTable)
+  .backgroundColor('red')
+  .render()
