@@ -1,7 +1,11 @@
 const properties = require('./properties')
+const webkitProperties = require('./webkitProperties')
 const utils = require('./utils')
 
 const jsStyle = function() {
+  const { removePrefix, formatOutput, formatNest } = utils
+  const props = properties
+  const webkit = webkitProperties
 
   let state = {
     body: {},
@@ -12,19 +16,22 @@ const jsStyle = function() {
     extension: 'ext-'
   }
 
-  const { removePrefix, formatOutput, formatNest } = utils
-  const props = properties
   Object.keys(props).forEach(key => {
-    jsStyle[key] = props[key]
+    jsStyle[key] = function(value) {
+      this.convert(props[key], value)
+      return this
+    }
+  })
+
+  Object.keys(webkit).forEach(key => {
+    jsStyle[key] = function(value) {
+      this.convert(webkit[key], value)
+      return this
+    }
   })
 
   jsStyle.convert = function(propName, value) {
     state.body[propName] = value
-  }
-
-  jsStyle.selector = function(selector) {
-    state.body.selector = selector
-    return this
   }
 
   jsStyle.render = function () {
@@ -58,8 +65,9 @@ const jsStyle = function() {
     return state
   }
 
-  jsStyle.use = function () {
-    return state
+  jsStyle.selector = function(selector) {
+    state.body.selector = selector
+    return this
   }
 
 return jsStyle

@@ -7,6 +7,7 @@ const basicCell = js_style()
   .position(defaultPosition)
   .color('#444444')
   .backgroundColor('#ffffff')
+  .webkitAnimationDelay('3s')
   .use()
 
 const basicTable = js_style()
