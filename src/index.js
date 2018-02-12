@@ -1,4 +1,5 @@
 const properties = require('./properties')
+const utils = require('./utils')
 
 const jsStyle = function() {
 
@@ -7,6 +8,11 @@ const jsStyle = function() {
     nested: [],
   }
 
+  const prefixes = {
+    extension: 'ext-'
+  }
+
+  const { removePrefix, formatOutput, formatNest } = utils
   const props = properties
   Object.keys(props).forEach(key => {
     jsStyle[key] = props[key]
@@ -22,57 +28,34 @@ const jsStyle = function() {
   }
 
   jsStyle.render = function () {
-    Object.keys(state.body).forEach(function(key) {
-      key = (key.indexOf('ext-') != -1) ?
-        key.slice(4) :
-        key
-      key === 'selector' ?
-        console.log(`${state.body[key]} {`) :
-        console.log(`  ${key}: ${state.body[key]}`);
-    });
-    console.log('}')
-    console.log('')
+    formatOutput(state.body, prefixes)
     state.nested.forEach(nest => {
-      Object.keys(nest).forEach(function(key) {
-        key === 'selector' ?
-          console.log(`${nest[key]} {`) :
-          console.log(`  ${key}: ${nest[key]}`)
-      });
-      console.log('}')
-      console.log('')
+      formatOutput(nest, prefixes)
     })
-
     return state
   }
 
   jsStyle.extend = function (arr) {
-    Object.keys(arr.body).slice(1).forEach(function(key) {
-      state.body[`ext-${key}`] = arr.body[key]
-    });
+    Object
+      .keys(arr.body)
+      .slice(1)
+      .forEach(function(key) {
+        // Add prefix to extended property name and assign it to state.body
+        state.body[`${prefixes.extension}${key}`] = arr.body[key]
+      });
     return this
   }
 
   jsStyle.nest = function (arr) {
-    Object
-      .keys(arr.body)
-      .map(key => {
-        return key === 'selector' ?
-          arr.body[key] = `${state.body[key]} ${arr.body[key]}` :
-          key
-      })
-
-    state.nested.push(arr.body)
+    formatNest(arr.body, state)
     arr.nested.forEach(nest => {
-      Object
-      .keys(nest)
-      .map(key => {
-        return key === 'selector' ?
-        nest[key] = `${state.body[key]} ${nest[key]}` :
-        key
-      })
-      state.nested.push(nest)
+      formatNest(nest, state)
     })
     return this
+  }
+
+  jsStyle.use = function () {
+    return state
   }
 
   jsStyle.use = function () {
