@@ -19,7 +19,14 @@ const utils = {
           case 'selector':
             return `${obj[key]} {`
           default:
-            const newKey = utils.removePrefix(key, prefixes.extension)
+            let newKey
+            // Check for all prefixes in prefixes object
+            Object
+              .keys(prefixes)
+              .forEach(prefix => {
+                // Remove prefixes from the key
+                newKey = utils.removePrefix(key, prefixes[prefix])
+              })
             return ` ${newKey}: ${obj[key]};`
         }
       })
