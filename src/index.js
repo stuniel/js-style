@@ -4,8 +4,7 @@ const utils = require('./utils')
 
 const jsStyle = function() {
   const { removePrefix, formatOutput, formatNest } = utils
-  const props = properties
-  const webkit = webkitProperties
+  const props = [properties, webkitProperties]
 
   let state = {
     body: {},
@@ -13,25 +12,28 @@ const jsStyle = function() {
   }
 
   const prefixes = {
-    extension: 'ext-'
+    extension: 'ext-',
+    add: 'add-',
   }
 
-  Object.keys(props).forEach(key => {
-    jsStyle[key] = function(value) {
-      this.convert(props[key], value)
-      return this
-    }
+  props.forEach(prop => {
+    Object.keys(prop).forEach(key => {
+      jsStyle[key] = function(value) {
+        state.body[prop[key]] = value
+        return this
+      }
+    })
   })
-
-  Object.keys(webkit).forEach(key => {
-    jsStyle[key] = function(value) {
-      this.convert(webkit[key], value)
-      return this
+  
+  jsStyle.add = function(prop, value) {
+    if(typeof prop === 'object') {
+      Object.keys(prop).forEach(propName => {
+        state.body[`${prefixes.add}${propName}`] = prop[propName]
+      })
+    } else {
+      state.body[prop] = value
     }
-  })
-
-  jsStyle.convert = function(propName, value) {
-    state.body[propName] = value
+    return this
   }
 
   jsStyle.render = function () {
