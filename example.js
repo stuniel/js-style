@@ -5,6 +5,7 @@ const defaultPosition = 'relative';
 const basicCell = js_style()
   .selector('.cell')
   .position(defaultPosition)
+  .add({'font-size': '16px'})
   .color('#444444')
   .backgroundColor('#ffffff')
   .webkitAnimationDelay('3s')

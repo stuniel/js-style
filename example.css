@@ -1,16 +1,18 @@
 div {
-  background-color: red
+ background-color: red;
 }
 
 div .table {
-  position: relative
-  color: #3e3e3e
-  background-color: #ffffff
+ position: relative;
+ color: #3e3e3e;
+ background-color: #ffffff;
 }
 
 div .table .cell {
-  position: relative
-  color: #444444
-  background-color: #ffffff
+ position: relative;
+ font-size: 16px;
+ color: #444444;
+ background-color: #ffffff;
+ -webkit-animation-delay: 3s;
 }
 
