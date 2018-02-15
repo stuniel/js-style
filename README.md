@@ -36,7 +36,24 @@ in your terminal to compile it to a CSS file.
 
 ## Methods
 
-js-style uses JavaScript methods to create CSS styles.
+js-style uses JavaScript methods to create CSS styles. These are the main methods used in js-style:
+
+`.selector(value)` - defines a seletor
+
+`.add(prop, value)` - defines props
+
+`.camelCaseCSSName(value)` - defines props 
+
+`.use()` - allows you to use the element in the future
+
+`.render()` - renders the output of the element
+
+`.extend(element)` - extends previously defined element
+
+`.nest(element)` - nests previously defined element
+
+
+## Selector
 
 To declare a selector use `.selector()` method with selector name as an attribute:
 
@@ -50,9 +67,35 @@ will result in
 body {
 ```
 
-The style names match the CSS names, except names are written using camel casing. So we will write `fontSize` instead of `font-size`.
+## Add
 
-js-style gives methods for all the style names with values as attributes.
+To add a property to your element you can use `.add(prop, value)` method which expects a property name and value as sting values or an object with property name as a key and a value as a value.
+
+```js
+.add('color', 'red')
+.add('background-color', 'blue')
+```
+
+and 
+
+```js
+.add({ 
+  'color': 'red',
+  'background-color': 'blue'
+})
+```
+
+will both result in
+
+```css
+color: red;
+background-color: blue;
+```
+
+
+## Style names methods
+
+js-style gives methods for all the style names with values as attributes. The style names match the CSS names, except names are written using camel casing. So we will write `fontSize` instead of `font-size`.
 
 ```
 .color('#3e3e3e')
@@ -63,6 +106,13 @@ will result in
 ```
 color: #3e3e3e;
 ```
+
+### Use
+
+If you want to use a variable add method `.use()` at the end.
+
+
+## Render
 
 After declaring all the properties you have to use `.render()` method to render the output.
 
@@ -86,11 +136,6 @@ table {
   background-color: #ffffff;
 }
 ```
-
-
-### Use
-
-If you want to use a variable add method `.use()` at the end.
 
 
 ### Extend
