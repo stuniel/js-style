@@ -24,7 +24,12 @@ var utils = {
         case 'selector':
           return obj[key] + ' {';
         default:
-          var newKey = utils.removePrefix(key, prefixes.extension);
+          var newKey = void 0;
+          // Check for all prefixes in prefixes object
+          Object.keys(prefixes).forEach(function (prefix) {
+            // Remove prefixes from the key
+            newKey = utils.removePrefix(key, prefixes[prefix]);
+          });
           return ' ' + newKey + ': ' + obj[key] + ';';
       }
     }).forEach(function (key) {

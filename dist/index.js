@@ -1,9 +1,17 @@
 'use strict';
 
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+
 var properties = require('./properties');
+var webkitProperties = require('./webkitProperties');
 var utils = require('./utils');
 
 var jsStyle = function jsStyle() {
+  var removePrefix = utils.removePrefix,
+      formatOutput = utils.formatOutput,
+      formatNest = utils.formatNest;
+
+  var props = [properties, webkitProperties];
 
   var state = {
     body: {},
@@ -11,24 +19,27 @@ var jsStyle = function jsStyle() {
   };
 
   var prefixes = {
-    extension: 'ext-'
+    extension: 'ext-',
+    add: 'add-'
   };
 
-  var removePrefix = utils.removePrefix,
-      formatOutput = utils.formatOutput,
-      formatNest = utils.formatNest;
-
-  var props = properties;
-  Object.keys(props).forEach(function (key) {
-    jsStyle[key] = props[key];
+  props.forEach(function (prop) {
+    Object.keys(prop).forEach(function (key) {
+      jsStyle[key] = function (value) {
+        state.body[prop[key]] = value;
+        return this;
+      };
+    });
   });
 
-  jsStyle.convert = function (propName, value) {
-    state.body[propName] = value;
-  };
-
-  jsStyle.selector = function (selector) {
-    state.body.selector = selector;
+  jsStyle.add = function (prop, value) {
+    if ((typeof prop === 'undefined' ? 'undefined' : _typeof(prop)) === 'object') {
+      Object.keys(prop).forEach(function (propName) {
+        state.body['' + prefixes.add + propName] = prop[propName];
+      });
+    } else {
+      state.body[prop] = value;
+    }
     return this;
   };
 
@@ -60,8 +71,9 @@ var jsStyle = function jsStyle() {
     return state;
   };
 
-  jsStyle.use = function () {
-    return state;
+  jsStyle.selector = function (selector) {
+    state.body.selector = selector;
+    return this;
   };
 
   return jsStyle;

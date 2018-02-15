@@ -42,7 +42,7 @@ js-style uses JavaScript methods to create CSS styles. These are the main method
 
 `.add(prop, value)` - defines props
 
-`.camelCaseCSSName(value)` - defines props 
+`.camelCaseCSSName(value)` - defines props
 
 `.use()` - allows you to use the element in the future
 
@@ -53,7 +53,7 @@ js-style uses JavaScript methods to create CSS styles. These are the main method
 `.nest(element)` - nests previously defined element
 
 
-## Selector
+### Selector
 
 To declare a selector use `.selector()` method with selector name as an attribute:
 
@@ -67,7 +67,7 @@ will result in
 body {
 ```
 
-## Add
+### Add
 
 To add a property to your element you can use `.add(prop, value)` method which expects a property name and value as sting values or an object with property name as a key and a value as a value.
 
@@ -76,10 +76,10 @@ To add a property to your element you can use `.add(prop, value)` method which e
 .add('background-color', 'blue')
 ```
 
-and 
+and
 
 ```js
-.add({ 
+.add({
   'color': 'red',
   'background-color': 'blue'
 })
@@ -87,13 +87,13 @@ and
 
 will both result in
 
-```css
+```
 color: red;
 background-color: blue;
 ```
 
 
-## Style names methods
+### Style names methods
 
 js-style gives methods for all the style names with values as attributes. The style names match the CSS names, except names are written using camel casing. So we will write `fontSize` instead of `font-size`.
 
@@ -112,7 +112,7 @@ color: #3e3e3e;
 If you want to use a variable add method `.use()` at the end.
 
 
-## Render
+### Render
 
 After declaring all the properties you have to use `.render()` method to render the output.
 
