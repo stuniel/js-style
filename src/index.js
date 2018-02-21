@@ -3,17 +3,19 @@ const webkitProperties = require('./webkitProperties')
 const utils = require('./utils')
 
 const jsStyle = function() {
-  const { removePrefix, formatOutput, formatNest } = utils
+  const { close, removePrefix, formatOutput, formatNest, formatInclusion } = utils
   const props = [properties, webkitProperties]
 
   let state = {
     body: {},
     nested: [],
+    included: [],
   }
 
   const prefixes = {
     extension: 'ext-',
     add: 'add-',
+    inclusion: 'inc-',
   }
 
   props.forEach(prop => {
@@ -36,12 +38,24 @@ const jsStyle = function() {
     return this
   }
 
-  jsStyle.render = function () {
-    formatOutput(state.body, prefixes)
-    state.nested.forEach(nest => {
-      formatOutput(nest, prefixes)
+  jsStyle.render = function() {
+    const renderer = []
+    formatOutput(state.body, prefixes, renderer)
+    state.included.forEach(inclusion => {
+      formatInclusion(inclusion.body, prefixes, renderer)
+      close(renderer, 'inclusion')
+      inclusion.nested.forEach(nest => {
+        formatInclusion(nest, prefixes, renderer)
+        close(renderer, 'inclusion')
+      })
     })
-    return state
+    close(renderer)
+    state.nested.forEach(nest => {
+      formatOutput(nest, prefixes, renderer)
+      close(renderer)
+    })
+    renderer.forEach(line => console.log(line))
+    return renderer
   }
 
   jsStyle.extend = function (arr) {
@@ -54,12 +68,33 @@ const jsStyle = function() {
       });
     return this
   }
+  
+  jsStyle.include = function(obj) {
+    if (Array.isArray(obj)) {
+      obj.forEach(element => {
+        state.included.push(element)
+      })
+    } else {
+      state.included.push(obj)
+    }
+    return this
+  }
 
-  jsStyle.nest = function (arr) {
-    formatNest(arr.body, state)
-    arr.nested.forEach(nest => {
-      formatNest(nest, state)
-    })
+  jsStyle.nest = function(obj) {
+    // Accept array of objects
+    if (Array.isArray(obj)) {
+      obj.forEach(element => {
+        formatNest(element.body, state)
+        element.nested.forEach(nest => {
+          formatNest(nest, state)
+        })
+      })
+    } else {
+      formatNest(obj.body, state)
+      obj.nested.forEach(nest => {
+        formatNest(nest, state)
+      })
+    }
     return this
   }
 
