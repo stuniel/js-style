@@ -2,42 +2,62 @@
 
 var utils = {
 
-  removePrefix: function (_removePrefix) {
-    function removePrefix(_x, _x2) {
-      return _removePrefix.apply(this, arguments);
+  close: function close(renderer, type) {
+    switch (type) {
+      case 'inclusion':
+        renderer.push('  }');
+        break;
+      default:
+        renderer.push('}');
     }
+    renderer.push('');
+  },
 
-    removePrefix.toString = function () {
-      return _removePrefix.toString();
-    };
+  removePrefixes: function removePrefixes(key, prefixes) {
+    var newKey = key;
+    var prefixesList = Object.keys(prefixes).map(function (prefix) {
+      return prefixes[prefix];
+    });
 
-    return removePrefix;
-  }(function (key, prefix) {
-    var newKey = key.indexOf(prefix) !== -1 ? key.slice(prefix.length) : key;
-    // Check if there is a 'deeper' extension
-    return newKey.indexOf(prefix) !== -1 ? removePrefix(newKey, prefix) : newKey;
-  }),
+    prefixesList.forEach(function (prefix) {
+      if (key.indexOf(prefix) !== -1) {
+        newKey = key.slice(prefix.length);
+      }
+    });
 
-  formatOutput: function formatOutput(obj, prefixes) {
+    return prefixesList.some(function (prefix) {
+      return newKey.indexOf(prefix) !== -1;
+    }) ? this.removePrefixes(newKey, prefixes) : newKey;
+  },
+
+  formatInclusion: function formatInclusion(obj, prefixes, renderer) {
+    Object.keys(obj).map(function (key) {
+      switch (key) {
+        case 'selector':
+          return '  ' + obj[key] + ' {';
+        default:
+          // Check for all prefixes in prefixes object
+          var newKey = utils.removePrefixes(key, prefixes);
+          return '    ' + newKey + ': ' + obj[key] + ';';
+      }
+    }).forEach(function (key) {
+      return renderer.push(key);
+    });
+  },
+
+  formatOutput: function formatOutput(obj, prefixes, renderer) {
     Object.keys(obj).map(function (key) {
       switch (key) {
         case 'selector':
           return obj[key] + ' {';
         default:
-          var newKey = void 0;
           // Check for all prefixes in prefixes object
-          Object.keys(prefixes).forEach(function (prefix) {
-            // Remove prefixes from the key
-            newKey = utils.removePrefix(key, prefixes[prefix]);
-          });
-          return ' ' + newKey + ': ' + obj[key] + ';';
+          var newKey = utils.removePrefixes(key, prefixes);
+          return '  ' + newKey + ': ' + obj[key] + ';';
       }
     }).forEach(function (key) {
-      return console.log(key);
+      return renderer.push(key);
     });
-    // Add closing bracket and whitespace
-    console.log('}');
-    console.log('');
   },
 
   formatNest: function formatNest(obj, state) {

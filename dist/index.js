@@ -5,22 +5,27 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 var properties = require('./properties');
 var webkitProperties = require('./webkitProperties');
 var utils = require('./utils');
+var fs = require('fs');
 
 var jsStyle = function jsStyle() {
-  var removePrefix = utils.removePrefix,
+  var close = utils.close,
+      removePrefix = utils.removePrefix,
       formatOutput = utils.formatOutput,
-      formatNest = utils.formatNest;
+      formatNest = utils.formatNest,
+      formatInclusion = utils.formatInclusion;
 
   var props = [properties, webkitProperties];
 
   var state = {
     body: {},
-    nested: []
+    nested: [],
+    included: []
   };
 
   var prefixes = {
     extension: 'ext-',
-    add: 'add-'
+    add: 'add-',
+    inclusion: 'inc-'
   };
 
   props.forEach(function (prop) {
@@ -44,11 +49,23 @@ var jsStyle = function jsStyle() {
   };
 
   jsStyle.render = function () {
-    formatOutput(state.body, prefixes);
-    state.nested.forEach(function (nest) {
-      formatOutput(nest, prefixes);
+    var renderer = [];
+    formatOutput(state.body, prefixes, renderer);
+    state.included.forEach(function (inclusion) {
+      formatInclusion(inclusion.body, prefixes, renderer);
+      close(renderer, 'inclusion');
+      inclusion.nested.forEach(function (nest) {
+        formatInclusion(nest, prefixes, renderer);
+        close(renderer, 'inclusion');
+      });
     });
-    return state;
+    close(renderer);
+    state.nested.forEach(function (nest) {
+      formatOutput(nest, prefixes, renderer);
+      close(renderer);
+    });
+    // renderer.forEach(line => console.log(line))
+    return renderer;
   };
 
   jsStyle.extend = function (arr) {
@@ -59,11 +76,32 @@ var jsStyle = function jsStyle() {
     return this;
   };
 
-  jsStyle.nest = function (arr) {
-    formatNest(arr.body, state);
-    arr.nested.forEach(function (nest) {
-      formatNest(nest, state);
-    });
+  jsStyle.include = function (obj) {
+    if (Array.isArray(obj)) {
+      obj.forEach(function (element) {
+        state.included.push(element);
+      });
+    } else {
+      state.included.push(obj);
+    }
+    return this;
+  };
+
+  jsStyle.nest = function (obj) {
+    // Accept array of objects
+    if (Array.isArray(obj)) {
+      obj.forEach(function (element) {
+        formatNest(element.body, state);
+        element.nested.forEach(function (nest) {
+          formatNest(nest, state);
+        });
+      });
+    } else {
+      formatNest(obj.body, state);
+      obj.nested.forEach(function (nest) {
+        formatNest(nest, state);
+      });
+    }
     return this;
   };
 
@@ -74,6 +112,24 @@ var jsStyle = function jsStyle() {
   jsStyle.selector = function (selector) {
     state.body.selector = selector;
     return this;
+  };
+
+  jsStyle.write = function (data) {
+    if (!Array.isArray(data)) data = [data];
+    data.forEach(function (obj) {
+      var output = obj.output;
+      var input = obj.input;
+      var formatOutput = output.indexOf('.css') === -1 ? output + '.css' : output;
+      var formatInput = input.join('\n');
+
+      fs.writeFile(formatOutput, formatInput, function (err) {
+        if (err) {
+          console.log("Failed to write file:", err);
+        } else {
+          console.log('File written to \'' + formatOutput + '\'.');
+        }
+      });
+    });
   };
 
   return jsStyle;
