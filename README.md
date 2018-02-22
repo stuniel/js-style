@@ -28,7 +28,7 @@ Now you are ready to use all the methods that the library provides.
 After you write your code in a JavaScript file you can run
 
 ```
-node file.js > file.css
+node file.js
 ```
 
 in your terminal to compile it to a CSS file.
@@ -48,9 +48,13 @@ js-style uses JavaScript methods to create CSS styles. These are the main method
 
 `.render()` - renders the output of the element
 
+`.write()` - converts and writes the output of elements
+
 `.extend(element)` - extends previously defined element
 
 `.nest(element)` - nests previously defined element
+
+`.include(element)` - includes previously defined element
 
 
 ### Selector
@@ -138,6 +142,68 @@ table {
 ```
 
 
+### Write
+
+If you want to convert elements to CSS files you have to use `.write()` method. This method accepts an object or array of objects with `input` and `output` as keys.
+
+Syntax:
+
+```js
+js_style().write({
+  input: INPUT_VARIABLE,
+  output: OUTPUT_FILE
+})
+```
+
+or
+
+```js
+js_style().write([
+  {
+    input: INPUT_VARIABLE,
+    output: OUTPUT_FILE
+  },
+  {
+    input: INPUT_VARIABLE,
+    output: OUTPUT_FILE
+  },
+])
+```
+
+A simple example will look like this
+
+```js
+const table = js_style()
+  .selector('.table')
+  .position('relative')
+  .color('#3e3e3e')
+  .backgroundColor('#ffffff')
+  .render()
+
+const bigTable = js_style()
+  .selector('.table--big')
+  .position('relative')
+  .color('#3e3e3e')
+  .backgroundColor('#ffffff')
+  .width('100%')
+  .render()
+
+js_style()
+  .write([
+    {
+      input: table,
+      output: '.././css/table.css'
+    },
+    {
+      input: bigTable,
+      output: 'bigTable'
+    },
+  ])
+```
+
+This will result in 'table.css' file written in a specified directory and 'bigTable.css' written in the working directory.
+
+
 ### Extend
 
 js-styles provides `.extend()` method that lets you share a set of CSS properties from one selector to another.
@@ -177,6 +243,42 @@ will result in
   height: 100%;
 }
 
+```
+
+
+### Include
+
+js-styles also provides `.include()` method that lets you insert elements inside another.
+
+This code
+
+```js
+const basicTable = js_style()
+  .selector('.table')
+  .position('relative')
+  .color('#3e3e3e')
+  .backgroundColor('#ffffff')
+  .width('400px')
+  .use()
+
+const smallScreen = js_style()
+  .selector('@media only screen and (max-width: 24em)')
+  .include(basicTable)
+  .render()
+```
+
+will result in
+
+```css
+@media only screen and (max-width: 24em) {
+  .table {
+    position: relative;
+    color: #3e3e3e;
+    background-color: #ffffff;
+    width: 400px;
+  }
+
+}
 ```
 
 
