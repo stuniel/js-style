@@ -1,6 +1,8 @@
 const properties = require('./properties')
 const webkitProperties = require('./webkitProperties')
 const utils = require('./utils')
+const fs = require('fs')
+
 
 const jsStyle = function() {
   const { close, removePrefix, formatOutput, formatNest, formatInclusion } = utils
@@ -26,7 +28,7 @@ const jsStyle = function() {
       }
     })
   })
-  
+
   jsStyle.add = function(prop, value) {
     if(typeof prop === 'object') {
       Object.keys(prop).forEach(propName => {
@@ -54,9 +56,11 @@ const jsStyle = function() {
       formatOutput(nest, prefixes, renderer)
       close(renderer)
     })
-    renderer.forEach(line => console.log(line))
+    // Temporarily remove console.log in favour of `.write()` method
+    // renderer.forEach(line => console.log(line))
     return renderer
   }
+
 
   jsStyle.extend = function (arr) {
     Object
@@ -65,10 +69,10 @@ const jsStyle = function() {
       .forEach(function(key) {
         // Add prefix to extended property name and assign it to state.body
         state.body[`${prefixes.extension}${key}`] = arr.body[key]
-      });
+      })
     return this
   }
-  
+
   jsStyle.include = function(obj) {
     if (Array.isArray(obj)) {
       obj.forEach(element => {
@@ -105,6 +109,27 @@ const jsStyle = function() {
   jsStyle.selector = function(selector) {
     state.body.selector = selector
     return this
+  }
+
+  jsStyle.write = function(data) {
+    if (!Array.isArray(data)) data = [data]
+    data.forEach(obj => {
+      const output = obj.output
+      const input = obj.input
+      const formatOutput = output.indexOf('.css') === -1 ?
+        `${output}.css` :
+        output
+      const formatInput = input.join('\n')
+
+      fs.writeFile(formatOutput, formatInput, function(err) {
+        if (err) {
+          console.log("Failed to write file:", err)
+        } else {
+          console.log(`File written to '${formatOutput}'.`)
+        }
+      })
+
+    })
   }
 
 return jsStyle
