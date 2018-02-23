@@ -3,7 +3,6 @@ const webkitProperties = require('./webkitProperties')
 const utils = require('./utils')
 const fs = require('fs')
 
-
 const jsStyle = function() {
   const { close, removePrefix, formatOutput, formatNest, formatInclusion } = utils
   const props = [properties, webkitProperties]
@@ -20,6 +19,19 @@ const jsStyle = function() {
     inclusion: 'inc-',
   }
 
+  const config = {
+    space: {
+      body: {
+        key: '',
+        prop: '  ',
+      },
+      inclusion: {
+        key: '  ',
+        prop: '    ',
+      },
+    },
+  }
+
   props.forEach(prop => {
     Object.keys(prop).forEach(key => {
       jsStyle[key] = function(value) {
@@ -30,7 +42,7 @@ const jsStyle = function() {
   })
 
   jsStyle.add = function(prop, value) {
-    if(typeof prop === 'object') {
+    if (typeof prop === 'object') {
       Object.keys(prop).forEach(propName => {
         state.body[`${prefixes.add}${propName}`] = prop[propName]
       })
@@ -42,18 +54,18 @@ const jsStyle = function() {
 
   jsStyle.render = function() {
     const renderer = []
-    formatOutput(state.body, prefixes, renderer)
+    formatOutput(state.body, prefixes, renderer, config.space.body)
     state.included.forEach(inclusion => {
-      formatInclusion(inclusion.body, prefixes, renderer)
+      formatOutput(inclusion.body, prefixes, renderer, config.space.inclusion)
       close(renderer, 'inclusion')
       inclusion.nested.forEach(nest => {
-        formatInclusion(nest, prefixes, renderer)
+        formatOutput(nest, prefixes, renderer, config.space.inclusion)
         close(renderer, 'inclusion')
       })
     })
     close(renderer)
     state.nested.forEach(nest => {
-      formatOutput(nest, prefixes, renderer)
+      formatOutput(nest, prefixes, renderer, config.space.body)
       close(renderer)
     })
     // Temporarily remove console.log in favour of `.write()` method
@@ -61,10 +73,8 @@ const jsStyle = function() {
     return renderer
   }
 
-
-  jsStyle.extend = function (arr) {
-    Object
-      .keys(arr.body)
+  jsStyle.extend = function(arr) {
+    Object.keys(arr.body)
       .slice(1)
       .forEach(function(key) {
         // Add prefix to extended property name and assign it to state.body
@@ -102,7 +112,7 @@ const jsStyle = function() {
     return this
   }
 
-  jsStyle.use = function () {
+  jsStyle.use = function() {
     return state
   }
 
@@ -116,23 +126,20 @@ const jsStyle = function() {
     data.forEach(obj => {
       const output = obj.output
       const input = obj.input
-      const formatOutput = output.indexOf('.css') === -1 ?
-        `${output}.css` :
-        output
+      const formatOutput = output.indexOf('.css') === -1 ? `${output}.css` : output
       const formatInput = input.join('\n')
 
       fs.writeFile(formatOutput, formatInput, function(err) {
         if (err) {
-          console.log("Failed to write file:", err)
+          console.log('Failed to write file:', err)
         } else {
           console.log(`File written to '${formatOutput}'.`)
         }
       })
-
     })
   }
 
-return jsStyle
+  return jsStyle
 }
 
 module.exports = jsStyle
