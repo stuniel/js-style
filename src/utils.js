@@ -1,5 +1,4 @@
 const utils = {
-  
   close: function(renderer, type) {
     switch (type) {
       case 'inclusion':
@@ -13,9 +12,7 @@ const utils = {
 
   removePrefixes: function(key, prefixes) {
     let newKey = key
-    const prefixesList = Object
-      .keys(prefixes)
-      .map(prefix => prefixes[prefix])
+    const prefixesList = Object.keys(prefixes).map(prefix => prefixes[prefix])
 
     prefixesList.forEach(prefix => {
       if (key.indexOf(prefix) !== -1) {
@@ -23,38 +20,19 @@ const utils = {
       }
     })
 
-    return prefixesList.some(prefix => (newKey.indexOf(prefix) !== -1)) ?
-      this.removePrefixes(newKey, prefixes) :
-      newKey
+    return prefixesList.some(prefix => newKey.indexOf(prefix) !== -1) ? this.removePrefixes(newKey, prefixes) : newKey
   },
 
-  formatInclusion: function(obj, prefixes, renderer) {
-    Object
-      .keys(obj)
+  formatOutput: function(obj, prefixes, renderer, space) {
+    Object.keys(obj)
       .map(key => {
-        switch(key) {
+        switch (key) {
           case 'selector':
-            return `  ${obj[key]} {`
+            return `${space.key}${obj[key]} {`
           default:
             // Check for all prefixes in prefixes object
             let newKey = utils.removePrefixes(key, prefixes)
-            return `    ${newKey}: ${obj[key]};`
-        }
-      })
-      .forEach(key => renderer.push(key))
-  },
-
-  formatOutput: function(obj, prefixes, renderer) {
-    Object
-      .keys(obj)
-      .map(key => {
-        switch(key) {
-          case 'selector':
-            return `${obj[key]} {`
-          default:
-            // Check for all prefixes in prefixes object
-            let newKey = utils.removePrefixes(key, prefixes)
-            return `  ${newKey}: ${obj[key]};`
+            return `${space.prop}${newKey}: ${obj[key]};`
         }
       })
       .forEach(key => renderer.push(key))
@@ -63,16 +41,11 @@ const utils = {
   formatNest: function(obj, state) {
     // Create object copy to prevent mutating the original one
     const newObj = Object.assign({}, obj)
-    Object
-      .keys(obj)
-      .map(key => {
-        return key === 'selector' ?
-          newObj[key] = `${state.body[key]} ${obj[key]}` :
-          key
-      })
+    Object.keys(obj).map(key => {
+      return key === 'selector' ? (newObj[key] = `${state.body[key]} ${obj[key]}`) : key
+    })
     state.nested.push(newObj)
-  }
-
+  },
 }
 
 module.exports = utils
