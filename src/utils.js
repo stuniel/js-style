@@ -1,13 +1,12 @@
 const utils = {
-  close: function(renderer, type) {
+  close: function(type, space) {
     switch (type) {
       case 'inclusion':
-        renderer.push('  }')
+        return [`${space}}`, '']
         break
       default:
-        renderer.push('}')
+        return [`${space || ''}}`, '']
     }
-    renderer.push('')
   },
 
   removePrefixes: function(key, prefixes) {
@@ -23,19 +22,31 @@ const utils = {
     return prefixesList.some(prefix => newKey.indexOf(prefix) !== -1) ? this.removePrefixes(newKey, prefixes) : newKey
   },
 
-  formatOutput: function(obj, prefixes, renderer, space) {
-    Object.keys(obj)
-      .map(key => {
-        switch (key) {
-          case 'selector':
-            return `${space.key}${obj[key]} {`
-          default:
-            // Check for all prefixes in prefixes object
-            let newKey = utils.removePrefixes(key, prefixes)
-            return `${space.prop}${newKey}: ${obj[key]};`
-        }
+  formatOutput: function(obj, prefixes, space, included, spaceInclusion, close) {
+    let output = Object.keys(obj).map(key => {
+      switch (key) {
+        case 'selector':
+          return `${space.key}${obj[key]} {`
+        default:
+          // Check for all prefixes in prefixes object
+          let newKey = utils.removePrefixes(key, prefixes)
+          return `${space.prop}${newKey}: ${obj[key]};`
+      }
+    })
+    // Add included output
+    if (included) {
+      included.forEach(inclusion => {
+        output = output.concat(utils.formatOutput(inclusion.body, prefixes, spaceInclusion, null, null, 'inclusion'))
+        inclusion.nested.forEach(nest => {
+          output = output.concat(utils.formatOutput(nest, prefixes, spaceInclusion, null, null, 'inclusion'))
+        })
       })
-      .forEach(key => renderer.push(key))
+      output = output.concat(utils.close(close, space.key))
+      return output
+    } else {
+      output = output.concat(utils.close(close, space.key))
+      return output
+    }
   },
 
   formatNest: function(obj, state) {
@@ -44,7 +55,7 @@ const utils = {
     Object.keys(obj).map(key => {
       return key === 'selector' ? (newObj[key] = `${state.body[key]} ${obj[key]}`) : key
     })
-    state.nested.push(newObj)
+    return newObj
   },
 }
 

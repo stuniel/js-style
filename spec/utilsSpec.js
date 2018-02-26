@@ -2,26 +2,27 @@ const utils = require('../src/utils')
 
 describe('close', function() {
   it('should return semicolon and newline by default', function() {
-    const renderer = []
+    let renderer
     const rendererAfter = ['}', '']
 
-    utils.close(renderer)
+    renderer = utils.close()
     expect(renderer).toEqual(rendererAfter)
   })
 
   it('should return semicolon and newline by default', function() {
-    const renderer = []
+    let renderer
     const rendererAfter = ['}', '']
 
-    utils.close(renderer, 'extension')
+    renderer = utils.close('extension')
     expect(renderer).toEqual(rendererAfter)
   })
 
   it('should add indent in inclusion', function() {
-    const renderer = []
+    let renderer
     const rendererAfter = ['  }', '']
 
-    utils.close(renderer, 'inclusion')
+
+    renderer = utils.close('inclusion', '  ')
     expect(renderer).toEqual(rendererAfter)
   })
 })
@@ -62,36 +63,48 @@ describe('formatOutput', function() {
       add: 'add-',
       inclusion: 'inc-',
     }
-    const renderer = []
+    let renderer
     const space = {
       key: '',
       prop: '  ',
     }
 
-    const output = ['div {', '  color: red;', '  width: 100%;']
-    utils.formatOutput(input, prefixes, renderer, space)
+    const output = ['div {', '  color: red;', '  width: 100%;', '}', '']
+    renderer = utils.formatOutput(input, prefixes, space)
     expect(renderer).toEqual(output)
   })
 
   it('should format inclusion correctly', function() {
     const input = {
       selector: 'div',
-      'ext-color': 'red',
-      width: '100%',
     }
+    const included = [
+      {
+        body: {
+          selector: '.table',
+          'background-color': 'red',
+          width: '50%',
+        },
+        nested: [],
+      },
+    ]
     const prefixes = {
       extension: 'ext-',
       add: 'add-',
       inclusion: 'inc-',
     }
-    const renderer = []
-    const space = {
+    let renderer
+    const spaceBody = {
+      key: '',
+      prop: '  ',
+    }
+    const spaceInclusion = {
       key: '  ',
       prop: '    ',
     }
 
-    const output = ['  div {', '    color: red;', '    width: 100%;']
-    utils.formatOutput(input, prefixes, renderer, space)
+    const output = ['div {', '  .table {', '    background-color: red;', '    width: 50%;', '  }', '', '}', '']
+    renderer = utils.formatOutput(input, prefixes, spaceBody, included, spaceInclusion)
     expect(renderer).toEqual(output)
   })
 })
@@ -108,7 +121,6 @@ describe('formatNest', function() {
         selector: '.table',
         color: 'blue',
       },
-      nested: [],
     }
 
     const output = {
@@ -117,7 +129,6 @@ describe('formatNest', function() {
       width: '100%',
     }
 
-    utils.formatNest(input, state)
-    expect(state.nested[0]).toEqual(output)
+    expect(utils.formatNest(input, state)).toEqual(output)
   })
 })

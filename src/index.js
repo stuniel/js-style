@@ -53,20 +53,13 @@ const jsStyle = function() {
   }
 
   jsStyle.render = function() {
-    const renderer = []
-    formatOutput(state.body, prefixes, renderer, config.space.body)
-    state.included.forEach(inclusion => {
-      formatOutput(inclusion.body, prefixes, renderer, config.space.inclusion)
-      close(renderer, 'inclusion')
-      inclusion.nested.forEach(nest => {
-        formatOutput(nest, prefixes, renderer, config.space.inclusion)
-        close(renderer, 'inclusion')
-      })
-    })
-    close(renderer)
+    let renderer = []
+    renderer = renderer.concat(
+      formatOutput(state.body, prefixes, config.space.body, state.included, config.space.inclusion),
+    )
+
     state.nested.forEach(nest => {
-      formatOutput(nest, prefixes, renderer, config.space.body)
-      close(renderer)
+      renderer = renderer.concat(formatOutput(nest, prefixes, config.space.body))
     })
     // Temporarily remove console.log in favour of `.write()` method
     // renderer.forEach(line => console.log(line))
@@ -98,15 +91,15 @@ const jsStyle = function() {
     // Accept array of objects
     if (Array.isArray(obj)) {
       obj.forEach(element => {
-        formatNest(element.body, state)
+        state.nested.push(formatNest(element.body, state))
         element.nested.forEach(nest => {
-          formatNest(nest, state)
+          state.nested.push(formatNest(nest, state))
         })
       })
     } else {
-      formatNest(obj.body, state)
+      state.nested.push(formatNest(obj.body, state))
       obj.nested.forEach(nest => {
-        formatNest(nest, state)
+        state.nested.push(formatNest(nest, state))
       })
     }
     return this
