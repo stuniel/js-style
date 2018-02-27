@@ -4,7 +4,7 @@ const utils = require('./utils')
 const fs = require('fs')
 
 const jsStyle = function() {
-  const { close, removePrefix, formatOutput, formatNest, formatInclusion } = utils
+  const { close, formatPropertyWithPrefix, removePrefix, formatOutput, formatNest } = utils
   const props = [properties, webkitProperties]
 
   let state = {
@@ -35,7 +35,7 @@ const jsStyle = function() {
   props.forEach(prop => {
     Object.keys(prop).forEach(key => {
       jsStyle[key] = function(value) {
-        state.body[prop[key]] = value
+        state.body = utils.formatPropertyWithPrefix(state.body, prop[key], value, prefixes.add)
         return this
       }
     })
@@ -44,10 +44,12 @@ const jsStyle = function() {
   jsStyle.add = function(prop, value) {
     if (typeof prop === 'object') {
       Object.keys(prop).forEach(propName => {
-        state.body[`${prefixes.add}${propName}`] = prop[propName]
+        state.body = utils.formatPropertyWithPrefix(state.body, propName, prop[propName], prefixes.add)
+        // state.body[`${prefixes.add}${propName}`] = prop[propName]
       })
     } else {
-      state.body[prop] = value
+      state.body = utils.formatPropertyWithPrefix(state.body, prop, value, prefixes.add)
+      // state.body[`${prefixes.add}${prop}`] = value
     }
     return this
   }
@@ -67,41 +69,36 @@ const jsStyle = function() {
   }
 
   jsStyle.extend = function(arr) {
-    Object.keys(arr.body)
-      .slice(1)
-      .forEach(function(key) {
-        // Add prefix to extended property name and assign it to state.body
-        state.body[`${prefixes.extension}${key}`] = arr.body[key]
-      })
+    Object.keys(arr.body).forEach(function(key) {
+      // Add prefix to extended property
+      prefixedKey = `${prefixes.extension}${key}`
+      // Remove selectors
+      state.body =
+        key === 'selector'
+          ? state.body
+          : // Check for repeating property name and assign property to state.body
+            utils.formatPropertyWithPrefix(state.body, prefixedKey, arr.body[key], prefixes.extension)
+    })
     return this
   }
 
   jsStyle.include = function(obj) {
-    if (Array.isArray(obj)) {
-      obj.forEach(element => {
-        state.included.push(element)
-      })
-    } else {
-      state.included.push(obj)
-    }
+    if (!Array.isArray(obj)) obj = [obj]
+    obj.forEach(element => {
+      state.included.push(element)
+    })
     return this
   }
 
   jsStyle.nest = function(obj) {
     // Accept array of objects
-    if (Array.isArray(obj)) {
-      obj.forEach(element => {
-        state.nested.push(formatNest(element.body, state))
-        element.nested.forEach(nest => {
-          state.nested.push(formatNest(nest, state))
-        })
-      })
-    } else {
-      state.nested.push(formatNest(obj.body, state))
-      obj.nested.forEach(nest => {
+    if (!Array.isArray(obj)) obj = [obj]
+    obj.forEach(element => {
+      state.nested.push(formatNest(element.body, state))
+      element.nested.forEach(nest => {
         state.nested.push(formatNest(nest, state))
       })
-    }
+    })
     return this
   }
 
