@@ -21,9 +21,38 @@ describe('close', function() {
     let renderer
     const rendererAfter = ['  }', '']
 
-
     renderer = utils.close('inclusion', '  ')
     expect(renderer).toEqual(rendererAfter)
+  })
+})
+
+describe('formatPropertyWithPrefix', function() {
+  it('should not modify prop name', function() {
+    let body = {
+      'background-color': '#ffffff',
+    }
+    const output = {
+      'background-color': '#ffffff',
+      color: 'red',
+    }
+    body = utils.formatPropertyWithPrefix(body, 'color', 'red', 'add-')
+    expect(body).toEqual(output)
+  })
+
+  it('should modify repeated prop name', function() {
+    let body = {
+      'background-color': '#ffffff',
+      color: 'blue',
+      'add-color': 'red',
+    }
+    const output = {
+      'background-color': '#ffffff',
+      color: 'blue',
+      'add-color': 'red',
+      'add-add-color': 'green',
+    }
+    body = utils.formatPropertyWithPrefix(body, 'color', 'green', 'add-')
+    expect(body).toEqual(output)
   })
 })
 

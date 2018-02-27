@@ -9,6 +9,14 @@ const utils = {
     }
   },
 
+  formatPropertyWithPrefix: function(obj, prop, value, prefix) {
+    let propName = prop
+    obj.hasOwnProperty(propName) ? (propName = prefix + propName) : (propName = propName)
+    return obj.hasOwnProperty(propName)
+      ? utils.formatPropertyWithPrefix(obj, propName, value, prefix)
+      : Object.assign({}, obj, { [propName]: value })
+  },
+
   removePrefixes: function(key, prefixes) {
     let newKey = key
     const prefixesList = Object.keys(prefixes).map(prefix => prefixes[prefix])
