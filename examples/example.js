@@ -1,11 +1,14 @@
 const js_style = require('.././src/index.js')
 
-const defaultPosition = 'relative';
+const defaultPosition = 'relative'
 
 const basicCell = js_style()
   .selector('.cell')
   .position(defaultPosition)
-  .add({'font-size': '16px'})
+  .add({
+    'font-size': '16px',
+    color: '#3f3f3f',
+  })
   .color('#444444')
   .backgroundColor('#ffffff')
   .webkitAnimationDelay('3s')
@@ -27,14 +30,14 @@ const basicPage = js_style()
 
 /* ------------------------------------------------------------------------------------------------*/
 
-  let media
+let media
 const sizes = {
   l: '64em',
   m: '48em',
   s: '24em',
 }
 
-const mediaSelector = (size) => {
+const mediaSelector = size => {
   return `@media only screen and (max-width: ${size})`
 }
 
@@ -42,38 +45,37 @@ const colSelector = (size, number) => {
   return `col-${size}-${number}`
 }
 
-const colWidth = (number) => {
+const colWidth = number => {
   return `calc(${number}/12 * 100%)`
 }
 
-Object
-  .keys(sizes)
-  .forEach(size => {
-    let column, columns = []
-    for (let i = 0; i < 12; i++) {
-      column = js_style()
-      .selector(colSelector(size, i+1))
+Object.keys(sizes).forEach(size => {
+  let column,
+    columns = []
+  for (let i = 0; i < 12; i++) {
+    column = js_style()
+      .selector(colSelector(size, i + 1))
       .add({
-        'flex-basis': colWidth(i+1),
-        'max-width': colWidth(i+1),
+        'flex-basis': colWidth(i + 1),
+        'max-width': colWidth(i + 1),
       })
       .use()
-      columns.push(column)
-    }
+    columns.push(column)
+  }
 
-    media = js_style()
-      .selector(mediaSelector(sizes[size]))
-      .include(columns)
-      .render()
+  media = js_style()
+    .selector(mediaSelector(sizes[size]))
+    .include(columns)
+    .render()
 })
 
 js_style().write([
   {
     input: basicPage,
-    output: 'basicPage'
+    output: 'basicPage',
   },
   {
     input: media,
-    output: 'media'
+    output: 'media',
   },
 ])
