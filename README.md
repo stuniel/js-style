@@ -38,17 +38,17 @@ in your terminal to compile it to a CSS file.
 
 js-style uses JavaScript methods to create CSS styles. These are the main methods used in js-style:
 
-`.selector(value)` - defines a seletor
-
-`.add(prop, value)` - defines props
-
-`.camelCaseCSSName(value)` - defines props
-
 `.use()` - allows you to use the element in the future
 
 `.render()` - renders the output of the element
 
 `.write()` - converts and writes the output of elements
+
+`.selector(value)` - defines a seletor
+
+`.add(prop, value)` - defines props
+
+`.camelCaseCSSName(value)` - defines props
 
 `.extend(element)` - extends previously defined element
 
@@ -57,60 +57,6 @@ js-style uses JavaScript methods to create CSS styles. These are the main method
 `.include(element)` - includes previously defined element
 
 
-### Selector
-
-To declare a selector use `.selector()` method with selector name as an attribute:
-
-```
-.selector('body')
-```
-
-will result in
-
-```
-body {
-```
-
-### Add
-
-To add a property to your element you can use `.add(prop, value)` method which expects a property name and value as sting values or an object with property name as a key and a value as a value.
-
-```js
-.add('color', 'red')
-.add('background-color', 'blue')
-```
-
-and
-
-```js
-.add({
-  'color': 'red',
-  'background-color': 'blue'
-})
-```
-
-will both result in
-
-```
-color: red;
-background-color: blue;
-```
-
-
-### Style names methods
-
-js-style gives methods for all the style names with values as attributes. The style names match the CSS names, except names are written using camel casing. So we will write `fontSize` instead of `font-size`.
-
-```
-.color('#3e3e3e')
-```
-
-will result in
-
-```
-color: #3e3e3e;
-```
-
 ### Use
 
 If you want to use a variable add method `.use()` at the end.
@@ -118,7 +64,7 @@ If you want to use a variable add method `.use()` at the end.
 
 ### Render
 
-After declaring all the properties you have to use `.render()` method to render the output.
+After declaring all the properties you have to use `.render()` method to enable the element to be rendered.
 
 A simple example will look like this
 
@@ -202,6 +148,62 @@ js_style()
 ```
 
 This will result in 'table.css' file written in a specified directory and 'bigTable.css' written in the working directory.
+
+
+### Selector
+
+To declare a selector use `.selector()` method with selector name as an attribute:
+
+```
+.selector('body')
+```
+
+will result in
+
+```
+body {
+```
+
+
+### Add
+
+To add a property to your element you can use `.add(prop, value)` method which expects a property name and value as sting values or an object with property name as a key and a value as a value.
+
+```js
+.add('color', 'red')
+.add('background-color', 'blue')
+```
+
+and
+
+```js
+.add({
+  'color': 'red',
+  'background-color': 'blue'
+})
+```
+
+will both result in
+
+```
+color: red;
+background-color: blue;
+```
+
+
+### Style names methods
+
+js-style gives methods for all the style names with values as attributes. The style names match the CSS names, except names are written using camel casing. So we will write `fontSize` instead of `font-size`.
+
+```
+.color('#3e3e3e')
+```
+
+will result in
+
+```
+color: #3e3e3e;
+```
 
 
 ### Extend
