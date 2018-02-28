@@ -30,30 +30,15 @@ var utils = {
     }) ? this.removePrefixes(newKey, prefixes) : newKey;
   },
 
-  formatInclusion: function formatInclusion(obj, prefixes, renderer) {
+  formatOutput: function formatOutput(obj, prefixes, renderer, space) {
     Object.keys(obj).map(function (key) {
       switch (key) {
         case 'selector':
-          return '  ' + obj[key] + ' {';
+          return '' + space.key + obj[key] + ' {';
         default:
           // Check for all prefixes in prefixes object
           var newKey = utils.removePrefixes(key, prefixes);
-          return '    ' + newKey + ': ' + obj[key] + ';';
-      }
-    }).forEach(function (key) {
-      return renderer.push(key);
-    });
-  },
-
-  formatOutput: function formatOutput(obj, prefixes, renderer) {
-    Object.keys(obj).map(function (key) {
-      switch (key) {
-        case 'selector':
-          return obj[key] + ' {';
-        default:
-          // Check for all prefixes in prefixes object
-          var newKey = utils.removePrefixes(key, prefixes);
-          return '  ' + newKey + ': ' + obj[key] + ';';
+          return '' + space.prop + newKey + ': ' + obj[key] + ';';
       }
     }).forEach(function (key) {
       return renderer.push(key);

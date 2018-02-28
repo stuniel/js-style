@@ -28,6 +28,19 @@ var jsStyle = function jsStyle() {
     inclusion: 'inc-'
   };
 
+  var config = {
+    space: {
+      body: {
+        key: '',
+        prop: '  '
+      },
+      inclusion: {
+        key: '  ',
+        prop: '    '
+      }
+    }
+  };
+
   props.forEach(function (prop) {
     Object.keys(prop).forEach(function (key) {
       jsStyle[key] = function (value) {
@@ -50,20 +63,21 @@ var jsStyle = function jsStyle() {
 
   jsStyle.render = function () {
     var renderer = [];
-    formatOutput(state.body, prefixes, renderer);
+    formatOutput(state.body, prefixes, renderer, config.space.body);
     state.included.forEach(function (inclusion) {
-      formatInclusion(inclusion.body, prefixes, renderer);
+      formatOutput(inclusion.body, prefixes, renderer, config.space.inclusion);
       close(renderer, 'inclusion');
       inclusion.nested.forEach(function (nest) {
-        formatInclusion(nest, prefixes, renderer);
+        formatOutput(nest, prefixes, renderer, config.space.inclusion);
         close(renderer, 'inclusion');
       });
     });
     close(renderer);
     state.nested.forEach(function (nest) {
-      formatOutput(nest, prefixes, renderer);
+      formatOutput(nest, prefixes, renderer, config.space.body);
       close(renderer);
     });
+    // Temporarily remove console.log in favour of `.write()` method
     // renderer.forEach(line => console.log(line))
     return renderer;
   };
@@ -124,7 +138,7 @@ var jsStyle = function jsStyle() {
 
       fs.writeFile(formatOutput, formatInput, function (err) {
         if (err) {
-          console.log("Failed to write file:", err);
+          console.log('Failed to write file:', err);
         } else {
           console.log('File written to \'' + formatOutput + '\'.');
         }

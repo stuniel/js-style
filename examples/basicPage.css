@@ -11,6 +11,7 @@ div .table {
 div .table .cell {
   position: relative;
   font-size: 16px;
+  color: #3f3f3f;
   color: #444444;
   background-color: #ffffff;
   -webkit-animation-delay: 3s;
