@@ -1,4 +1,5 @@
-# js-style
+# js-style [![npm](https://img.shields.io/npm/v/npm.svg)](https://www.npmjs.com/package/js-style)
+
 
 **js-style is an easy JavaScript based CSS preprocessor**.
 
